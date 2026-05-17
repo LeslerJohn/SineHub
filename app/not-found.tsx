@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
 import { Film } from 'lucide-react';
 
@@ -13,9 +13,9 @@ export default function NotFound() {
       <p className="text-muted-foreground max-w-md">
         We couldn't find the page you were looking for. It might have been moved or doesn't exist.
       </p>
-      <Button asChild className="mt-8">
-        <Link href="/">Return Home</Link>
-      </Button>
+      <Link href="/" className={buttonVariants({ className: "mt-8" })}>
+        Return Home
+      </Link>
     </Container>
   );
 }
