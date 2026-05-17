@@ -7,6 +7,8 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useUser } from "@/hooks/use-user"
 import { logout } from "@/lib/actions/auth"
+import { LocationToggle } from "@/components/shared/location-toggle"
+import { SearchInput } from "@/components/search/search-input"
 
 export function Header() {
   const { isAuthenticated, isLoading } = useUser()
@@ -26,19 +28,9 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="relative hidden lg:flex items-center">
-            <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Search movies..."
-              className="h-9 w-64 rounded-md border border-input bg-transparent px-8 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            />
-          </div>
+          <SearchInput />
           
-          <Button variant="outline" size="sm" className="hidden lg:flex gap-2">
-            <MapPin className="h-4 w-4" />
-            <span>Zamboanga City</span>
-          </Button>
+          <LocationToggle />
 
           <ThemeToggle />
 

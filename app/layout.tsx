@@ -19,6 +19,7 @@ import { Header } from "@/components/layout/header";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { Footer } from "@/components/layout/footer";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
@@ -44,22 +45,24 @@ export default async function RootLayout({
       className={`${inter.variable} ${outfit.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider initialSession={session}>
-            <Header />
-            <MobileNav />
-            <main className="flex-1 flex flex-col">
-              {children}
-            </main>
-            <Footer />
-            <BottomNav />
-          </AuthProvider>
+          <NuqsAdapter>
+            <AuthProvider initialSession={session}>
+              <Header />
+              <MobileNav />
+              <main className="flex-1 flex flex-col">
+                {children}
+              </main>
+              <Footer />
+              <BottomNav />
+            </AuthProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>
