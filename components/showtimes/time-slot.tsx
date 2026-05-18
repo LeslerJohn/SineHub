@@ -1,15 +1,20 @@
-import { MockShowtime } from "@/lib/mock-data/showtimes";
+import { DatabaseShowtime } from "@/types";
 import { Badge } from "@/components/ui/badge";
 
 interface TimeSlotProps {
-  showtime: MockShowtime;
-  onSelect: (showtime: MockShowtime) => void;
+  showtime: DatabaseShowtime;
+  onSelect: (showtime: DatabaseShowtime) => void;
 }
 
 export function TimeSlot({ showtime, onSelect }: TimeSlotProps) {
   // Determine color based on format
   const isIMAX = showtime.format.includes("IMAX");
   const isDC = showtime.format.includes("Director's");
+
+  // Derive price from format since we don't store it in DB yet
+  let price = 350;
+  if (isIMAX) price = 750;
+  if (isDC) price = 600;
 
   return (
     <button 
@@ -32,7 +37,7 @@ export function TimeSlot({ showtime, onSelect }: TimeSlotProps) {
             {showtime.format}
           </Badge>
           <span className="text-[10px] text-muted-foreground font-medium">
-            ₱{showtime.price}
+            ₱{price}
           </span>
         </div>
       </div>

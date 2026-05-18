@@ -13,10 +13,11 @@ import {
 import { useLocationStore } from "@/hooks/use-location-store";
 
 const CITIES = [
-  { value: "zamboanga", label: "Zamboanga City" },
-  { value: "manila", label: "Metro Manila" },
-  { value: "cebu", label: "Cebu City" },
-  { value: "davao", label: "Davao City" },
+  { value: "Zamboanga City", label: "Zamboanga City" },
+  { value: "Pagadian City", label: "Pagadian City" },
+  { value: "Cebu City", label: "Cebu City" },
+  { value: "Makati City", label: "Makati City" },
+  { value: "Metro Manila", label: "Metro Manila" },
 ];
 
 export function LocationToggle() {

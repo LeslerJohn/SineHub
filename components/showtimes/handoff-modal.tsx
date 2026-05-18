@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Lock, ExternalLink, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { MockShowtime, MockCinema } from "@/lib/mock-data/showtimes";
+import { DatabaseShowtime, DatabaseCinema } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,8 @@ import { Badge } from "@/components/ui/badge";
 interface HandoffModalProps {
   isOpen: boolean;
   onClose: () => void;
-  showtime: MockShowtime | null;
-  cinema: MockCinema | null;
+  showtime: DatabaseShowtime | null;
+  cinema: DatabaseCinema | null;
   movieTitle: string;
 }
 
@@ -23,14 +23,14 @@ export function HandoffModal({ isOpen, onClose, showtime, cinema, movieTitle }: 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     
-    if (isOpen && showtime) {
+    if (isOpen && showtime && showtime.ticket_url) {
       setCountdown(5);
       
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            window.location.href = showtime.bookingUrl;
+            window.location.href = showtime.ticket_url;
             return 0;
           }
           return prev - 1;
@@ -46,12 +46,20 @@ export function HandoffModal({ isOpen, onClose, showtime, cinema, movieTitle }: 
   if (!showtime || !cinema) return null;
 
   const handleContinue = () => {
-    window.location.href = showtime.bookingUrl;
+    if (showtime.ticket_url) {
+      window.location.href = showtime.ticket_url;
+    }
   };
 
   const handleCancel = () => {
     onClose();
   };
+
+  const isIMAX = showtime.format.includes("IMAX");
+  const isDC = showtime.format.includes("Director's");
+  let price = 350;
+  if (isIMAX) price = 750;
+  if (isDC) price = 600;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
@@ -87,11 +95,11 @@ export function HandoffModal({ isOpen, onClose, showtime, cinema, movieTitle }: 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">Date & Time</p>
-              <p className="font-semibold">{new Date(showtime.date).toLocaleDateString()} at {showtime.time}</p>
+              <p className="font-semibold">{new Date(showtime.date).toLocaleDateString()} at {showtime.time.substring(0, 5)}</p>
             </div>
             <div className="space-y-1 text-right">
               <p className="text-sm text-muted-foreground">Price</p>
-              <p className="font-semibold text-primary">₱{showtime.price}</p>
+              <p className="font-semibold text-primary">₱{price}</p>
             </div>
           </div>
         </div>
@@ -122,7 +130,7 @@ export function HandoffModal({ isOpen, onClose, showtime, cinema, movieTitle }: 
           <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handleContinue} className="w-full sm:w-auto gap-2">
+          <Button onClick={handleContinue} className="w-full sm:w-auto gap-2" disabled={!showtime.ticket_url}>
             Continue Now <ExternalLink className="h-4 w-4" />
           </Button>
         </DialogFooter>

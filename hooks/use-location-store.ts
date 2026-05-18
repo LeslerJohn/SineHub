@@ -8,7 +8,7 @@ interface LocationState {
 }
 
 export const useLocationStore = create<LocationState>((set) => ({
-  location: 'zamboanga', // Default fallback
+  location: 'Zamboanga City', // Default fallback
   setLocation: (location) => {
     set({ location });
     // Keep localStorage in sync for easy access, though cookie is primary for SSR

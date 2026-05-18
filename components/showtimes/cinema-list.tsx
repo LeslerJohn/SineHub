@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 import { MapPin, Building2 } from "lucide-react";
-import { MockShowtime, MockCinema, MOCK_CINEMAS } from "@/lib/mock-data/showtimes";
+import { DatabaseShowtime, DatabaseCinema } from "@/types";
 import { TimeSlot } from "@/components/showtimes/time-slot";
 import { HandoffModal } from "@/components/showtimes/handoff-modal";
 
 interface CinemaListProps {
-  showtimes: MockShowtime[];
+  showtimes: DatabaseShowtime[];
   movieTitle: string;
 }
 
 export function CinemaList({ showtimes, movieTitle }: CinemaListProps) {
-  const [selectedShowtime, setSelectedShowtime] = useState<MockShowtime | null>(null);
-  const [selectedCinema, setSelectedCinema] = useState<MockCinema | null>(null);
+  const [selectedShowtime, setSelectedShowtime] = useState<DatabaseShowtime | null>(null);
+  const [selectedCinema, setSelectedCinema] = useState<DatabaseCinema | null>(null);
 
-  const handleSelectShowtime = (showtime: MockShowtime, cinema: MockCinema) => {
+  const handleSelectShowtime = (showtime: DatabaseShowtime, cinema: DatabaseCinema) => {
     setSelectedShowtime(showtime);
     setSelectedCinema(cinema);
   };
@@ -24,6 +24,7 @@ export function CinemaList({ showtimes, movieTitle }: CinemaListProps) {
     setSelectedShowtime(null);
     setSelectedCinema(null);
   };
+
   if (!showtimes || showtimes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-xl">
@@ -40,17 +41,20 @@ export function CinemaList({ showtimes, movieTitle }: CinemaListProps) {
 
   // Group showtimes by Cinema ID
   const groupedShowtimes = showtimes.reduce((acc, curr) => {
-    if (!acc[curr.cinemaId]) {
-      acc[curr.cinemaId] = [];
+    const cinemaId = curr.cinema_id;
+    if (!acc[cinemaId]) {
+      acc[cinemaId] = {
+        cinema: curr.cinemas,
+        slots: [],
+      };
     }
-    acc[curr.cinemaId].push(curr);
+    acc[cinemaId].slots.push(curr);
     return acc;
-  }, {} as Record<string, MockShowtime[]>);
+  }, {} as Record<string, { cinema: DatabaseCinema; slots: DatabaseShowtime[] }>);
 
   return (
     <div className="space-y-8">
-      {Object.entries(groupedShowtimes).map(([cinemaId, slots]) => {
-        const cinema = MOCK_CINEMAS.find(c => c.id === cinemaId);
+      {Object.values(groupedShowtimes).map(({ cinema, slots }) => {
         if (!cinema) return null;
 
         // Group slots by format within the cinema
@@ -60,10 +64,10 @@ export function CinemaList({ showtimes, movieTitle }: CinemaListProps) {
           }
           acc[curr.format].push(curr);
           return acc;
-        }, {} as Record<string, MockShowtime[]>);
+        }, {} as Record<string, DatabaseShowtime[]>);
 
         return (
-          <div key={cinemaId} className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
+          <div key={cinema.id} className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
             <div className="p-4 sm:p-6 border-b bg-muted/20">
               <div className="flex items-start justify-between">
                 <div>
@@ -75,7 +79,7 @@ export function CinemaList({ showtimes, movieTitle }: CinemaListProps) {
                     </span>
                     <span className="flex items-center gap-1">
                       <MapPin className="h-4 w-4" />
-                      {cinema.location}
+                      {cinema.city}
                     </span>
                   </div>
                 </div>

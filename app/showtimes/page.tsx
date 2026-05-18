@@ -7,7 +7,8 @@ import { format } from "date-fns";
 import { cookies } from "next/headers";
 
 import { getMovieDetails, getTMDBImageUrl } from "@/lib/tmdb";
-import { getMockShowtimes } from "@/lib/mock-data/showtimes";
+import { createClient } from "@/lib/supabase/server";
+import { DatabaseShowtime } from "@/types";
 import { Container } from "@/components/ui/container";
 import { DateSelector } from "@/components/showtimes/date-selector";
 import { CinemaList } from "@/components/showtimes/cinema-list";
@@ -27,7 +28,6 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
   const movieIdStr = typeof params.movie === "string" ? params.movie : undefined;
   
   if (!movieIdStr) {
-    // Ideally we would show a list of movies to select, but for now we require a movie
     return (
       <Container className="py-20 text-center space-y-4">
         <h1 className="text-3xl font-bold">Select a Movie</h1>
@@ -49,23 +49,39 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
     notFound();
   }
 
-  const showtimes = getMockShowtimes(movieIdStr, selectedDate);
   const backdropUrl = getTMDBImageUrl(movie.backdrop_path, "w1280");
   const posterUrl = getTMDBImageUrl(movie.poster_path, "w185");
 
   // Read location cookie for display
   const cookieStore = await cookies();
   const locationCookie = cookieStore.get("sinehub_location");
-  let displayLocation = "Zamboanga City";
+  const displayLocation = locationCookie?.value || "Zamboanga City";
+
+  // Fetch from Supabase
+  const supabase = await createClient();
   
-  if (locationCookie) {
-    const locMap: Record<string, string> = {
-      zamboanga: "Zamboanga City",
-      manila: "Metro Manila",
-      cebu: "Cebu City",
-      davao: "Davao City"
-    };
-    displayLocation = locMap[locationCookie.value] || "Zamboanga City";
+  // 1. Get our internal movie ID from TMDB ID
+  const { data: dbMovie } = await supabase
+    .from("movies")
+    .select("id")
+    .eq("tmdb_id", movieId)
+    .single();
+
+  let showtimes: DatabaseShowtime[] = [];
+
+  if (dbMovie) {
+    // 2. Fetch showtimes for this movie, on this date, joining the cinema
+    const { data: rawShowtimes } = await supabase
+      .from("showtimes")
+      .select("*, cinemas!inner(*)")
+      .eq("movie_id", dbMovie.id)
+      .eq("date", selectedDate)
+      .eq("cinemas.city", displayLocation)
+      .order("time", { ascending: true });
+
+    if (rawShowtimes) {
+      showtimes = rawShowtimes as DatabaseShowtime[];
+    }
   }
 
   return (
@@ -110,7 +126,6 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
             </div>
           </div>
           
-          {/* We can re-use the LocationToggle here for local refinement if we want */}
           <div className="ml-auto hidden lg:block mb-1">
              <LocationToggle />
           </div>
