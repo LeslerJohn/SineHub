@@ -132,3 +132,19 @@ CREATE TRIGGER update_profiles_modtime
 CREATE TRIGGER update_movies_modtime
     BEFORE UPDATE ON public.movies
     FOR EACH ROW EXECUTE PROCEDURE public.update_modified_column();
+
+-- ==========================================
+-- SCRAPER LOGS TABLE
+-- ==========================================
+CREATE TABLE public.scraper_logs (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    provider TEXT NOT NULL,
+    status TEXT CHECK (status IN ('success', 'partial', 'failed')) NOT NULL,
+    showtimes_count INTEGER DEFAULT 0,
+    errors JSONB DEFAULT '[]',
+    duration_ms INTEGER,
+    ran_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX idx_scraper_logs_provider ON public.scraper_logs(provider);
+CREATE INDEX idx_scraper_logs_ran_at ON public.scraper_logs(ran_at);
