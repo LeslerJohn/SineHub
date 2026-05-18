@@ -44,3 +44,7 @@ next-env.d.ts
 task.md
 overview.md
 .sisyphus
+
+# scraper
+scraper/node_modules/
+scraper/dist/

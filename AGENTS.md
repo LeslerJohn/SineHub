@@ -14,9 +14,9 @@
 
 ## Database Management
 - The application connects to **PostgreSQL** managed through **Supabase**.
-- Whenever adding fields or tables:
-  - Create standard SQL scripts within the `supabase/` folder (e.g., `schema.sql`, `seed.sql`).
-- Manual data edits can be done via the Supabase Table Editor.
+- **Schema Changes & Migrations**: Do NOT edit the existing `supabase/schema.sql` or past migration files. When adding new tables, altering columns, or changing policies, you MUST create a new migration using the Supabase CLI: `supabase migration new <descriptive_name>`.
+- Place your incremental SQL changes in the newly generated file under `supabase/migrations/`. This ensures the database schema remains version-controlled and allows for safe rollbacks.
+- Manual data edits can be done via the Supabase Table Editor, but structural changes must be code-driven.
 
 ## UI Conventions
 - Reusable UI blocks are constructed with **shadcn/ui** components for accessibility and logic. Ensure any `.tsx` primitive components follow the `class-variance-authority` (CVA) patterns for unified theming. Use `npx shadcn@latest add <component>` to add new components as needed.
