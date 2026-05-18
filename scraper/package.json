@@ -1,0 +1,31 @@
+{
+  "name": "sinehub-scraper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/orchestrator.ts",
+    "scrape": "tsx src/orchestrator.ts",
+    "scrape:sm": "tsx src/orchestrator.ts --only=sm",
+    "scrape:robinsons": "tsx src/orchestrator.ts --only=robinsons",
+    "scrape:kcc": "tsx src/orchestrator.ts --only=kcc",
+    "cron": "tsx src/cron.ts",
+    "sync:movies": "tsx src/sync-movies.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.105.4",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.5.0",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.52.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  }
+}
