@@ -27,6 +27,13 @@ export interface TMDBGenre {
   name: string;
 }
 
+export interface TMDBProductionCompany {
+  id: number;
+  logo_path: string | null;
+  name: string;
+  origin_country: string;
+}
+
 export interface TMDBMovieDetails extends Omit<TMDBMovie, 'genre_ids'> {
   genres: TMDBGenre[];
   runtime: number | null;
@@ -34,6 +41,7 @@ export interface TMDBMovieDetails extends Omit<TMDBMovie, 'genre_ids'> {
   status: string;
   budget: number;
   revenue: number;
+  production_companies?: TMDBProductionCompany[];
 }
 
 export interface TMDBCast {

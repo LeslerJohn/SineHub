@@ -26,7 +26,10 @@ export function CastCarousel({ cast }: CastCarouselProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-heading font-bold">Top Cast</h3>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-xl font-heading font-bold tracking-tight">Top Cast</h3>
+        <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-primary to-primary/0" />
+      </div>
       
       <Carousel
         opts={{
@@ -48,8 +51,8 @@ export function CastCarousel({ cast }: CastCarouselProps) {
               key={actor.id}
               className="pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
             >
-              <div className="flex flex-col items-center text-center group cursor-pointer">
-                <Avatar className="h-24 w-24 mb-3 border-2 border-transparent transition-all duration-300 group-hover:border-primary group-hover:scale-105 shadow-sm">
+              <div className="flex flex-col items-center text-center group cursor-pointer p-3 rounded-2xl border border-transparent transition-all duration-300 hover:bg-card/30 hover:border-border/40 hover:shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                <Avatar className="h-24 w-24 mb-3 border-2 border-border/80 transition-all duration-300 group-hover:border-primary group-hover:scale-105 shadow-md shadow-black/5 group-hover:shadow-primary/10">
                   <AvatarImage 
                     src={getTMDBImageUrl(actor.profile_path, "w185")} 
                     alt={actor.name} 
@@ -59,8 +62,8 @@ export function CastCarousel({ cast }: CastCarouselProps) {
                     <User className="h-8 w-8 text-muted-foreground" />
                   </AvatarFallback>
                 </Avatar>
-                <span className="font-semibold text-sm leading-tight mb-1">{actor.name}</span>
-                <span className="text-xs text-muted-foreground leading-tight">{actor.character}</span>
+                <span className="font-semibold text-sm leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-1 w-full">{actor.name}</span>
+                <span className="text-xs text-muted-foreground leading-tight line-clamp-1 w-full">{actor.character}</span>
               </div>
             </CarouselItem>
           ))}

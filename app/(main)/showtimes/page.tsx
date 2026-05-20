@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, MapPin, ChevronLeft, ChevronRight, Film } from "lucide-react";
+import { ArrowLeft, MapPin, ChevronLeft, ChevronRight, Film, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cookies } from "next/headers";
 
@@ -341,25 +341,31 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
 
   return (
     <main className="flex min-h-screen flex-col pb-16">
-      {/* Mini Movie Header */}
-      <div className="relative w-full overflow-hidden bg-background border-b">
-        <div className="absolute inset-0 z-0">
+      {/* Immersive Glassmorphic Mini Header */}
+      <div className="relative w-full overflow-hidden bg-background border-b border-border/40">
+        <div className="absolute inset-0 z-0 overflow-hidden">
           <Image
             src={backdropUrl}
             alt={movie.title}
             fill
             priority
-            className="object-cover opacity-20"
+            className="object-cover scale-105 filter blur-[3px] opacity-25 dark:opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/20" />
+          {/* Cinematic Radial theater dark mask */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.85)_80%)] dark:bg-[radial-gradient(circle_at_center,transparent_25%,rgba(9,9,11,0.92)_90%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent hidden md:block" />
         </div>
 
-        <Container className="relative z-10 pt-8 pb-6 flex flex-col md:flex-row items-center md:items-end gap-6">
-          <Link href={`/movie/${movie.id}`} className="absolute top-4 left-4 md:static md:mb-auto p-2 rounded-full bg-background/50 backdrop-blur-md border hover:bg-accent transition-colors">
-            <ArrowLeft className="h-5 w-5" />
+        <Container className="relative z-10 pt-16 pb-6 md:pt-12 flex flex-col md:flex-row items-center md:items-end gap-6">
+          <Link 
+            href={`/movie/${movie.id}`} 
+            className="absolute top-4 left-4 md:static md:mb-auto p-2.5 rounded-full bg-background/60 dark:bg-black/40 backdrop-blur-md border border-border/50 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group shadow-lg"
+          >
+            <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
           </Link>
           
-          <div className="hidden md:block w-24 shrink-0 rounded-md overflow-hidden shadow-lg border">
+          <div className="hidden md:block w-24 shrink-0 rounded-xl overflow-hidden shadow-2xl border border-white/10 dark:border-white/5 transition-transform duration-300 hover:scale-102">
             <Image
               src={posterUrl}
               alt={movie.title}
@@ -369,35 +375,46 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
             />
           </div>
 
-          <div className="text-center md:text-left mt-8 md:mt-0">
-            <h1 className="text-2xl md:text-4xl font-heading font-bold mb-2">{movie.title}</h1>
-            <div className="flex items-center justify-center md:justify-start gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <MapPin className="h-4 w-4" />
-                <span className="hidden md:inline">Showing in</span> {displayLocation}
+          <div className="text-center md:text-left mt-4 md:mt-0 space-y-3">
+            <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tight drop-shadow-md bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80">
+              {movie.title}
+            </h1>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 text-xs font-semibold">
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 border border-emerald-500/20 text-emerald-500 px-3.5 py-1.5 shadow-[0_0_10px_rgba(16,185,129,0.05)]">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>Showing in {displayLocation}</span>
               </span>
-              <span>•</span>
-              <span>{movie.runtime} mins</span>
+              <span className="flex items-center gap-1.5 rounded-full bg-card/60 backdrop-blur-md border px-3 py-1 text-muted-foreground shadow-sm">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{movie.runtime} mins</span>
+              </span>
+              <span className="rounded-full bg-rose-500/10 dark:bg-rose-500/15 border border-rose-500/20 text-rose-500 px-3.5 py-1 text-[10px] font-extrabold uppercase shadow-sm">
+                Active Booking
+              </span>
             </div>
           </div>
           
-          <div className="ml-auto hidden lg:block mb-1">
+          <div className="ml-auto flex items-center gap-3 mb-1">
              <LocationToggle />
           </div>
         </Container>
       </div>
 
-      <Container className="py-8 space-y-8">
+      <Container className="py-8 space-y-10">
         {/* Date Selection */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold">Select Date</h2>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-heading font-bold tracking-tight">Select Screening Date</h2>
+            <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-primary to-primary/0" />
+          </div>
           <DateSelector />
         </div>
 
         {/* Showtimes List */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">Cinemas & Showtimes</h2>
+        <div className="space-y-6">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-heading font-bold tracking-tight">Cinemas & Showtimes</h2>
+            <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-primary to-primary/0" />
           </div>
           <CinemaList showtimes={showtimes} movieTitle={movie.title} />
         </div>
