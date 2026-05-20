@@ -31,18 +31,25 @@ export function CastCarousel({ cast }: CastCarouselProps) {
       <Carousel
         opts={{
           align: "start",
-          dragFree: true,
+          loop: false,
+          slidesToScroll: 1,
+          breakpoints: {
+            "(min-width: 640px)": { slidesToScroll: 2 },
+            "(min-width: 768px)": { slidesToScroll: 3 },
+            "(min-width: 1024px)": { slidesToScroll: 4 },
+          },
         }}
-        className="w-full"
+        className="w-full group/carousel"
       >
-        <CarouselContent className="-ml-4">
+        {/* py-4 -my-4 adds vertical padding inside the scroll window so avatar hover animations are never clipped */}
+        <CarouselContent className="-ml-4 py-4 -my-4">
           {topCast.map((actor) => (
             <CarouselItem
               key={actor.id}
               className="pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
             >
               <div className="flex flex-col items-center text-center group cursor-pointer">
-                <Avatar className="h-24 w-24 mb-3 border-2 border-transparent transition-colors group-hover:border-primary">
+                <Avatar className="h-24 w-24 mb-3 border-2 border-transparent transition-all duration-300 group-hover:border-primary group-hover:scale-105 shadow-sm">
                   <AvatarImage 
                     src={getTMDBImageUrl(actor.profile_path, "w185")} 
                     alt={actor.name} 
@@ -58,10 +65,10 @@ export function CastCarousel({ cast }: CastCarouselProps) {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="hidden md:block">
-          <CarouselPrevious className="-left-4 lg:-left-12" />
-          <CarouselNext className="-right-4 lg:-right-12" />
-        </div>
+        
+        {/* Glassmorphic navigation arrows positioned overlaying the sides, hidden on mobile touch */}
+        <CarouselPrevious className="absolute left-4 top-[35%] -translate-y-1/2 z-30 size-11 rounded-full bg-background/80 dark:bg-black/60 backdrop-blur-md border border-border dark:border-white/10 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground shadow-lg transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-0 pointer-events-auto flex items-center justify-center" />
+        <CarouselNext className="absolute right-4 top-[35%] -translate-y-1/2 z-30 size-11 rounded-full bg-background/80 dark:bg-black/60 backdrop-blur-md border border-border dark:border-white/10 hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground shadow-lg transition-all duration-300 opacity-0 group-hover/carousel:opacity-100 disabled:opacity-0 pointer-events-auto flex items-center justify-center" />
       </Carousel>
     </div>
   );
