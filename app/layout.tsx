@@ -15,10 +15,6 @@ const outfit = Outfit({
 import { createClient } from "@/lib/supabase/server";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Header } from "@/components/layout/header";
-import { MobileNav } from "@/components/layout/mobile-nav";
-import { BottomNav } from "@/components/layout/bottom-nav";
-import { Footer } from "@/components/layout/footer";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
@@ -54,13 +50,7 @@ export default async function RootLayout({
         >
           <NuqsAdapter>
             <AuthProvider initialSession={session}>
-              <Header />
-              <MobileNav />
-              <main className="flex-1 flex flex-col">
-                {children}
-              </main>
-              <Footer />
-              <BottomNav />
+              {children}
             </AuthProvider>
           </NuqsAdapter>
         </ThemeProvider>

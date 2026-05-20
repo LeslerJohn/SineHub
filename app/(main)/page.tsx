@@ -2,31 +2,36 @@ import { Container } from "@/components/ui/container";
 import { HeroSection } from "@/components/home/hero-section";
 import { MovieCarousel } from "@/components/home/movie-carousel";
 import { getNowPlaying, getTrendingMovies, getUpcoming } from "@/lib/tmdb";
+import { TMDBMovie } from "@/types/tmdb";
+
+function withPosters(movies: TMDBMovie[]): TMDBMovie[] {
+  return movies.filter((m) => m.poster_path !== null);
+}
 
 export default async function Home() {
-  // Fetch data concurrently
   const [nowPlayingRes, upcomingRes, trendingRes] = await Promise.all([
-    getNowPlaying(),
-    getUpcoming(),
-    getTrendingMovies('week')
+    getNowPlaying().catch(() => ({ results: [] as TMDBMovie[], page: 1, total_pages: 0, total_results: 0 })),
+    getUpcoming().catch(() => ({ results: [] as TMDBMovie[], page: 1, total_pages: 0, total_results: 0 })),
+    getTrendingMovies('week').catch(() => ({ results: [] as TMDBMovie[], page: 1, total_pages: 0, total_results: 0 })),
   ]);
 
-  const nowPlayingMovies = nowPlayingRes.results || [];
-  const upcomingMovies = upcomingRes.results || [];
-  const trendingMovies = trendingRes.results || [];
+  const nowPlayingMovies = withPosters(nowPlayingRes.results || []);
+  const upcomingMovies = withPosters(upcomingRes.results || []);
+  const trendingMovies = withPosters(trendingRes.results || []);
 
-  // Use the first popular 'Now Playing' movie for the hero section
-  const heroMovie = nowPlayingMovies.length > 0 ? nowPlayingMovies[0] : null;
+  const heroMovies = nowPlayingMovies
+    .filter((m) => m.backdrop_path !== null)
+    .slice(0, 5);
 
   return (
     <main className="flex min-h-screen flex-col">
-      {heroMovie && <HeroSection movie={heroMovie} />}
+      {heroMovies.length > 0 && <HeroSection movies={heroMovies} />}
       
-      <Container className="py-8 space-y-4">
+      <Container className="py-8 space-y-2">
         {nowPlayingMovies.length > 0 && (
           <MovieCarousel 
             title="Now Showing" 
-            movies={nowPlayingMovies.slice(1, 15)} 
+            movies={nowPlayingMovies.slice(0, 15)} 
             viewAllLink="/showtimes" 
           />
         )}
