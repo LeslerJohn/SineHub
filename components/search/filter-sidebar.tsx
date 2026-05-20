@@ -5,7 +5,6 @@ import { useQueryState, parseAsArrayOf, parseAsString, parseAsFloat } from "nuqs
 import { SlidersHorizontal, Search } from "lucide-react";
 
 import { TMDBGenre } from "@/types/tmdb";
-import { getMovieGenres } from "@/lib/tmdb";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Slider } from "@/components/ui/slider";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -37,7 +36,10 @@ export function FilterSidebar() {
   const debouncedRating = useDebounce(localRating, 500);
 
   useEffect(() => {
-    getMovieGenres().then((data) => setGenres(data.genres)).catch(console.error);
+    fetch('/api/genres')
+      .then((res) => res.json())
+      .then((data) => setGenres(data.genres || []))
+      .catch(console.error);
   }, []);
 
   // Sync local changes to URL

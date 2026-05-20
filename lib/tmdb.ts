@@ -76,12 +76,12 @@ export async function getMovieDetails(tmdbId: number): Promise<TMDBMovieDetails>
  * Search for movies by title
  * @param query The search query string
  */
-export async function searchMovies(query: string): Promise<TMDBMovieResponse> {
+export async function searchMovies(query: string, page: string = '1'): Promise<TMDBMovieResponse> {
   return fetchFromTMDB<TMDBMovieResponse>('/search/movie', {
     query,
     include_adult: 'false',
     language: 'en-US',
-    page: '1',
+    page,
   });
 }
 

@@ -19,3 +19,18 @@ export interface DatabaseShowtime {
   scraped_at: string;
   cinemas: DatabaseCinema;
 }
+
+export interface Profile {
+  id: string;
+  username: string | null;
+  avatar_url: string | null;
+  location: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProfileUpdate {
+  username?: string | null;
+  avatar_url?: string | null;
+  location?: string | null;
+}
