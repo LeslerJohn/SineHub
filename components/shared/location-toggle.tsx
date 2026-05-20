@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import {
   Select,
@@ -21,6 +22,7 @@ const CITIES = [
 ];
 
 export function LocationToggle() {
+  const router = useRouter();
   const { location, setLocation, isHydrated, setHydrated } = useLocationStore();
 
   useEffect(() => {
@@ -28,9 +30,22 @@ export function LocationToggle() {
     const savedLoc = localStorage.getItem("sinehub_location");
     if (savedLoc && CITIES.some(c => c.value === savedLoc)) {
       useLocationStore.setState({ location: savedLoc });
+      
+      // Keep cookie synchronized with localStorage to prevent SSR and client mismatch on fresh sessions
+      const currentCookie = typeof document !== "undefined"
+        ? document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("sinehub_location="))
+            ?.split("=")[1]
+        : null;
+
+      if (currentCookie !== encodeURIComponent(savedLoc) && currentCookie !== savedLoc) {
+        document.cookie = `sinehub_location=${savedLoc}; path=/; max-age=31536000`;
+        router.refresh();
+      }
     }
     setHydrated(true);
-  }, [setHydrated]);
+  }, [setHydrated, router]);
 
   if (!isHydrated) {
     return (
@@ -41,8 +56,15 @@ export function LocationToggle() {
     );
   }
 
+  const handleLocationChange = (val: string | null) => {
+    if (val) {
+      setLocation(val);
+      router.refresh();
+    }
+  };
+
   return (
-    <Select value={location} onValueChange={(val) => { if (val) setLocation(val); }}>
+    <Select value={location} onValueChange={handleLocationChange}>
       <SelectTrigger className="w-[180px] h-9 hidden lg:flex gap-2" aria-label="Select City">
         <MapPin className="h-4 w-4" />
         <SelectValue placeholder="Select City" />
@@ -57,3 +79,4 @@ export function LocationToggle() {
     </Select>
   );
 }
+
