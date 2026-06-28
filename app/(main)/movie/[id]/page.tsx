@@ -10,13 +10,15 @@ import {
   getMovieReleaseDates, 
   getSimilarMovies,
   getMovieCertification,
-  getTMDBImageUrl
+  getTMDBImageUrl,
+  getMovieWatchProviders
 } from "@/lib/tmdb";
 import { MovieHero } from "@/components/movie/movie-hero";
 import { MovieSynopsis } from "@/components/movie/movie-synopsis";
 import { CastCarousel } from "@/components/movie/cast-carousel";
 import { TrailerPlayer } from "@/components/movie/trailer-player";
 import { MovieCarousel } from "@/components/home/movie-carousel";
+import { StreamingProviders } from "@/components/movie/streaming-providers";
 import { Container } from "@/components/ui/container";
 
 interface MoviePageProps {
@@ -73,13 +75,15 @@ export default async function MoviePage({ params }: MoviePageProps) {
       credits,
       videos,
       releaseDates,
-      similar
+      similar,
+      watchProviders
     ] = await Promise.all([
       getMovieDetails(tmdbId),
       getMovieCredits(tmdbId),
       getMovieVideos(tmdbId),
       getMovieReleaseDates(tmdbId),
-      getSimilarMovies(tmdbId)
+      getSimilarMovies(tmdbId),
+      getMovieWatchProviders(tmdbId)
     ]);
 
     const certification = getMovieCertification(releaseDates);
@@ -104,6 +108,14 @@ export default async function MoviePage({ params }: MoviePageProps) {
               {videos.results && videos.results.length > 0 && (
                 <TrailerPlayer videos={videos.results} />
               )}
+
+              <StreamingProviders
+                providers={
+                  watchProviders?.results?.PH ||
+                  watchProviders?.results?.US ||
+                  null
+                }
+              />
 
               {/* Extended Movie Details Card */}
               <div className="rounded-2xl border border-border/50 bg-card/30 p-6 backdrop-blur-md space-y-6 shadow-md">
@@ -200,7 +212,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
           {/* Similar Movies */}
           {similar.results && similar.results.length > 0 && (
-            <div className="pt-8 border-t">
+            <div className="pt-8 border-t min-w-0 overflow-hidden">
               <MovieCarousel 
                 title="Similar Movies" 
                 movies={similar.results.slice(0, 15)} 

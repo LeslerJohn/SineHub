@@ -5,6 +5,7 @@ import {
   TMDBVideosResponse,
   TMDBCreditsResponse,
   TMDBReleaseDatesResponse,
+  TMDBWatchProvidersResponse,
 } from '@/types/tmdb';
 
 
@@ -144,6 +145,10 @@ export async function getSimilarMovies(tmdbId: number): Promise<TMDBMovieRespons
     language: 'en-US',
     page: '1',
   });
+}
+
+export async function getMovieWatchProviders(tmdbId: number): Promise<TMDBWatchProvidersResponse> {
+  return fetchFromTMDB<TMDBWatchProvidersResponse>(`/movie/${tmdbId}/watch/providers`);
 }
 
 /**
