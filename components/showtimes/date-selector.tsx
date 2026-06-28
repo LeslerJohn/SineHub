@@ -28,13 +28,13 @@ export function DateSelector() {
 
   return (
     <div className="w-full pb-2 pt-1">
-      <div className="flex items-center gap-1.5 mb-3 text-xs font-semibold text-muted-foreground">
+      <div className="flex items-center justify-center gap-1.5 mb-3 text-xs font-semibold text-muted-foreground">
         <CalendarDays className="h-4 w-4 text-muted-foreground/80" />
         <span>AVAILABLE DATES (7-DAY OUTLOOK)</span>
       </div>
 
-      <div className="w-full overflow-x-auto pb-3 hide-scrollbar">
-        <div className="flex gap-3 min-w-max px-1">
+      <div className="w-full overflow-x-auto pb-3 scrollbar-hide">
+        <div className="flex justify-center gap-3 min-w-max px-1">
           {dates.map((date, i) => {
             const dateStr = format(date, "yyyy-MM-dd");
             const isSelected = dateStr === selectedDate;

@@ -9,9 +9,6 @@ import { cookies } from "next/headers";
 import { 
   getMovieDetails, 
   getTMDBImageUrl,
-  getTrendingMovies,
-  getNowPlaying,
-  getUpcoming,
   discoverMovies,
   searchMovies
 } from "@/lib/tmdb";
@@ -22,7 +19,6 @@ import { Container } from "@/components/ui/container";
 import { DateSelector } from "@/components/showtimes/date-selector";
 import { CinemaList } from "@/components/showtimes/cinema-list";
 import { LocationToggle } from "@/components/shared/location-toggle";
-import { MovieCarousel } from "@/components/home/movie-carousel";
 import { FilterSidebar } from "@/components/search/filter-sidebar";
 import { MovieCard } from "@/components/shared/movie-card";
 
@@ -71,18 +67,7 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
   const movieIdStr = typeof params.movie === "string" ? params.movie : undefined;
   
   if (!movieIdStr) {
-    // 1. Fetch Carousel datasets concurrently
-    const [trendingRes, nowPlayingRes, upcomingRes] = await Promise.all([
-      getTrendingMovies('week').catch(() => ({ results: [] as TMDBMovie[] })),
-      getNowPlaying().catch(() => ({ results: [] as TMDBMovie[] })),
-      getUpcoming().catch(() => ({ results: [] as TMDBMovie[] })),
-    ]);
-
-    const trendingMovies = (trendingRes.results || []).filter(m => m.poster_path !== null).slice(0, 15);
-    const latestMovies = (nowPlayingRes.results || []).filter(m => m.poster_path !== null).slice(0, 15);
-    const upcomingMovies = (upcomingRes.results || []).filter(m => m.poster_path !== null).slice(0, 15);
-
-    // 2. Read explorer search & filter parameters
+    // 1. Read explorer search & filter parameters
     const q = typeof params.q === "string" ? params.q : undefined;
     const with_genres = typeof params.with_genres === "string" ? params.with_genres : undefined;
     const vote_average_gte = typeof params["vote_average.gte"] === "string" ? params["vote_average.gte"] : undefined;
@@ -118,9 +103,16 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
         if (vote_average_gte) {
           movies = movies.filter(m => m.vote_average >= parseFloat(vote_average_gte));
         }
+
+        // Sort searched movies locally by release date descending
+        movies.sort((a, b) => {
+          const dateA = a.release_date ? new Date(a.release_date).getTime() : 0;
+          const dateB = b.release_date ? new Date(b.release_date).getTime() : 0;
+          return dateB - dateA;
+        });
       } else {
         const discoverParams: Record<string, string> = {
-          sort_by: "popularity.desc",
+          sort_by: "release_date.desc",
           "release_date.lte": todayStr, // Native exclude coming soon
           page: pageStr,
         };
@@ -155,37 +147,13 @@ export default async function ShowtimesPage({ searchParams }: ShowtimesPageProps
               Cinema Hub
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg">
-              All movies. All malls. One app. Browse currently showing and upcoming movies, filter by genre, and explore showtimes.
+              All movies. All malls. One app. Browse currently showing movies, filter by genre, and explore showtimes.
             </p>
           </Container>
         </div>
 
-        {/* Carousel Rows */}
-        <Container className="py-8 space-y-6">
-          {trendingMovies.length > 0 && (
-            <MovieCarousel 
-              title="Trending This Week" 
-              movies={trendingMovies} 
-            />
-          )}
-          
-          {latestMovies.length > 0 && (
-            <MovieCarousel 
-              title="Latest Releases (Now Showing)" 
-              movies={latestMovies} 
-            />
-          )}
-          
-          {upcomingMovies.length > 0 && (
-            <MovieCarousel 
-              title="Coming Soon" 
-              movies={upcomingMovies} 
-            />
-          )}
-        </Container>
-
         {/* Explore All Movies Directory */}
-        <div className="border-t py-12 bg-muted/10">
+        <div className="py-12 bg-muted/5">
           <Container>
             <div className="mb-8">
               <h2 className="text-3xl font-heading font-bold tracking-tight">Explore All Movies</h2>

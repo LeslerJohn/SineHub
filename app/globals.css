@@ -161,3 +161,11 @@
 .card-glow:hover {
   box-shadow: 0 0 20px 2px oklch(0.7 0.15 270 / 25%), 0 8px 32px oklch(0 0 0 / 30%);
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

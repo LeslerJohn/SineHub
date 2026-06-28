@@ -44,6 +44,7 @@ next-env.d.ts
 task.md
 overview.md
 .sisyphus
+supabase/.temp
 
 # scraper
 scraper/node_modules/

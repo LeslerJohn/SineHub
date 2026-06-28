@@ -21,17 +21,19 @@ const CITIES = [
   { value: "Metro Manila", label: "Metro Manila" },
 ];
 
-export function LocationToggle() {
+interface LocationToggleProps {
+  className?: string;
+}
+
+export function LocationToggle({ className }: LocationToggleProps) {
   const router = useRouter();
   const { location, setLocation, isHydrated, setHydrated } = useLocationStore();
 
   useEffect(() => {
-    // On mount, check if there's a saved location in localStorage or cookie
     const savedLoc = localStorage.getItem("sinehub_location");
     if (savedLoc && CITIES.some(c => c.value === savedLoc)) {
       useLocationStore.setState({ location: savedLoc });
       
-      // Keep cookie synchronized with localStorage to prevent SSR and client mismatch on fresh sessions
       const currentCookie = typeof document !== "undefined"
         ? document.cookie
             .split("; ")
@@ -65,7 +67,7 @@ export function LocationToggle() {
 
   return (
     <Select value={location} onValueChange={handleLocationChange}>
-      <SelectTrigger className="w-[180px] h-9 hidden lg:flex gap-2" aria-label="Select City">
+      <SelectTrigger className={className ?? "w-[180px] h-9 flex gap-2"} aria-label="Select City">
         <MapPin className="h-4 w-4" />
         <SelectValue placeholder="Select City" />
       </SelectTrigger>
@@ -79,4 +81,3 @@ export function LocationToggle() {
     </Select>
   );
 }
-
