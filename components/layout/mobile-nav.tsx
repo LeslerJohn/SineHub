@@ -41,6 +41,9 @@ export function MobileNav() {
             <Link href="/showtimes" onClick={() => setOpen(false)} className="text-sm font-medium">Showtimes</Link>
             <Link href="/moviebud" onClick={() => setOpen(false)} className="text-sm font-medium">Moviebud</Link>
             <Link href="/search" onClick={() => setOpen(false)} className="text-sm font-medium">Search</Link>
+            {isAuthenticated && (
+              <Link href="/my-list" onClick={() => setOpen(false)} className="text-sm font-medium">My List</Link>
+            )}
           </div>
           <div className="mt-auto flex flex-col gap-4 border-t pt-4">
             <div className="flex items-center justify-between">

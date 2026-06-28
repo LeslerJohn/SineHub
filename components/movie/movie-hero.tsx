@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { TMDBMovieDetails } from "@/types/tmdb";
 import { getTMDBImageUrl } from "@/lib/tmdb";
 import { buttonVariants } from "@/components/ui/button";
+import { AddToListButton } from "@/components/shared/add-to-list-button";
 
 interface MovieHeroProps {
   movie: TMDBMovieDetails;
@@ -35,12 +36,12 @@ export function MovieHero({ movie, certification }: MovieHeroProps) {
           alt={movie.title}
           fill
           priority
-          className="object-cover scale-105 filter blur-[3px] opacity-20 dark:opacity-35 transition-all duration-700"
+          className="object-cover scale-105 filter blur-[3px] opacity-60 dark:opacity-45 transition-all duration-700"
         />
         {/* Cinematic Radial theater dark mask */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.85)_80%)] dark:bg-[radial-gradient(circle_at_center,transparent_25%,rgba(9,9,11,0.92)_90%)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent hidden md:block" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.5)_85%)] dark:bg-[radial-gradient(circle_at_center,transparent_35%,rgba(9,9,11,0.7)_90%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent hidden md:block" />
       </div>
 
       <div className="container relative z-10 mx-auto px-4 py-16 sm:py-24 md:py-28">
@@ -121,24 +122,33 @@ export function MovieHero({ movie, certification }: MovieHeroProps) {
               ))}
             </div>
 
-            {/* Pulse Action Button */}
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex w-full sm:w-auto"
-            >
-              <Link 
-                href={`/showtimes?movie=${movie.id}`} 
-                className={buttonVariants({ 
-                  size: "lg", 
-                  className: "group w-full sm:w-auto gap-2 font-semibold h-12 px-8 shadow-xl shadow-primary/20 bg-gradient-to-r from-primary to-amber-500 hover:from-primary/95 hover:to-amber-500/95 text-primary-foreground border-0" 
-                })}
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex w-full sm:w-auto"
               >
-                <Play className="h-4 w-4 fill-current text-primary-foreground" />
-                Find Showtimes
-                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </motion.div>
+                <Link 
+                  href={`/showtimes?movie=${movie.id}`} 
+                  className={buttonVariants({ 
+                    size: "lg", 
+                    className: "group w-full sm:w-auto gap-2 font-semibold h-12 px-8 shadow-xl shadow-primary/20 bg-gradient-to-r from-primary to-amber-500 hover:from-primary/95 hover:to-amber-500/95 text-primary-foreground border-0" 
+                  })}
+                >
+                  <Play className="h-4 w-4 fill-current text-primary-foreground" />
+                  Find Showtimes
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex w-full sm:w-auto"
+              >
+                <AddToListButton tmdbId={movie.id} />
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

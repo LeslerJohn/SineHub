@@ -1,6 +1,7 @@
 import { Container } from "@/components/ui/container";
 import { HeroSection } from "@/components/home/hero-section";
 import { MovieCarousel } from "@/components/home/movie-carousel";
+import { MyListCarousel } from "@/components/home/my-list-carousel";
 import { getNowPlaying, getTrendingMovies, getUpcoming } from "@/lib/tmdb";
 import { TMDBMovie } from "@/types/tmdb";
 
@@ -36,18 +37,20 @@ export default async function Home() {
           />
         )}
         
+        {trendingMovies.length > 0 && (
+          <MovieCarousel 
+            title="Trending This Week" 
+            movies={trendingMovies.slice(0, 15)} 
+          />
+        )}
+
+        <MyListCarousel />
+        
         {upcomingMovies.length > 0 && (
           <MovieCarousel 
             title="Coming Soon" 
             movies={upcomingMovies.slice(0, 15)} 
             viewAllLink="/search?filter=upcoming" 
-          />
-        )}
-        
-        {trendingMovies.length > 0 && (
-          <MovieCarousel 
-            title="Trending This Week" 
-            movies={trendingMovies.slice(0, 15)} 
           />
         )}
       </Container>

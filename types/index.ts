@@ -34,3 +34,10 @@ export interface ProfileUpdate {
   avatar_url?: string | null;
   location?: string | null;
 }
+
+export interface UserMovieListItem {
+  id: string;
+  user_id: string;
+  tmdb_id: number;
+  added_at: string;
+}

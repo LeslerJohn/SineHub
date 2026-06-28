@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Film, Search, User } from "lucide-react"
+import { Film, Search, User, Bookmark, ChevronDown } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 
@@ -13,6 +13,8 @@ import { LocationToggle } from "@/components/shared/location-toggle"
 import { SearchInput } from "@/components/search/search-input"
 import { Container } from "@/components/ui/container"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
+import { TMDBGenre } from "@/types/tmdb"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,9 +25,44 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+const DEFAULT_GENRES: TMDBGenre[] = [
+  { id: 28, name: "Action" },
+  { id: 12, name: "Adventure" },
+  { id: 16, name: "Animation" },
+  { id: 35, name: "Comedy" },
+  { id: 80, name: "Crime" },
+  { id: 99, name: "Documentary" },
+  { id: 18, name: "Drama" },
+  { id: 10751, name: "Family" },
+  { id: 14, name: "Fantasy" },
+  { id: 36, name: "History" },
+  { id: 27, name: "Horror" },
+  { id: 10402, name: "Music" },
+  { id: 9648, name: "Mystery" },
+  { id: 10749, name: "Romance" },
+  { id: 878, name: "Science Fiction" },
+  { id: 10770, name: "TV Movie" },
+  { id: 53, name: "Thriller" },
+  { id: 10752, name: "War" },
+  { id: 37, name: "Western" },
+]
+
 export function Header() {
   const { user, isAuthenticated, isLoading } = useUser()
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null)
+  const [isGenreOpen, setIsGenreOpen] = useState(false)
+  const [genres, setGenres] = useState<TMDBGenre[]>(DEFAULT_GENRES)
+
+  useEffect(() => {
+    fetch('/api/genres')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.genres && data.genres.length > 0) {
+          setGenres(data.genres)
+        }
+      })
+      .catch(console.error)
+  }, [])
   
   useEffect(() => {
     if (user?.id) {
@@ -55,7 +92,32 @@ export function Header() {
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link href="/showtimes" className="transition-colors hover:text-primary">Showtimes</Link>
-            <Link href="/genre" className="transition-colors hover:text-primary">Genre</Link>
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsGenreOpen(true)}
+              onMouseLeave={() => setIsGenreOpen(false)}
+            >
+              <button className="flex items-center gap-1 transition-colors hover:text-primary cursor-pointer text-sm font-medium py-2">
+                <span>Genre</span>
+                <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isGenreOpen && "rotate-180")} />
+              </button>
+              {isGenreOpen && (
+                <div className="absolute left-0 top-full z-50 w-[580px] rounded-xl border bg-background/95 p-5 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80 animate-in fade-in-50 slide-in-from-top-1 duration-200">
+                  <div className="grid grid-rows-5 grid-flow-col gap-x-6 gap-y-1">
+                    {genres.map((genre) => (
+                      <Link
+                        key={genre.id}
+                        href={`/search?with_genres=${genre.id}`}
+                        onClick={() => setIsGenreOpen(false)}
+                        className="text-sm text-muted-foreground transition-colors hover:text-primary py-1.5 px-3 rounded-md hover:bg-muted/50 block truncate"
+                      >
+                        {genre.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <Link href="/moviebud" className="transition-colors hover:text-primary">Moviebud</Link>
           </nav>
         </div>
@@ -63,7 +125,7 @@ export function Header() {
         <div className="flex items-center gap-4">
           <SearchInput />
           
-          <LocationToggle />
+          <LocationToggle className="w-[180px] h-9 hidden lg:flex gap-2" />
 
           <ThemeToggle />
 
@@ -96,8 +158,9 @@ export function Header() {
                     <DropdownMenuItem render={<Link href="/profile" />}>
                       Profile
                     </DropdownMenuItem>
-                    <DropdownMenuItem render={<Link href="/likes" />}>
-                      Likes
+                    <DropdownMenuItem render={<Link href="/my-list" />}>
+                      <Bookmark className="h-4 w-4 mr-2" />
+                      My List
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
